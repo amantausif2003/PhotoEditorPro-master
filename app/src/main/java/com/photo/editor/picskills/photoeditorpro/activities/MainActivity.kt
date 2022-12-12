@@ -1,6 +1,5 @@
 package com.photo.editor.picskills.photoeditorpro.activities
 
-import com.photo.editor.picskills.photoeditorpro.ads.AdManager.loadInterstitialAd
 import com.photo.editor.picskills.photoeditorpro.adapter.MainStatusAdapter.MainStatusClickListener
 import com.photo.editor.picskills.photoeditorpro.model.AppDesignModel
 import com.photo.editor.picskills.photoeditorpro.adapter.MainStatusAdapter
@@ -56,7 +55,7 @@ open class MainActivity : AppCompatActivity(), MainStatusClickListener,
     private val statusDesignList: ArrayList<AppDesignModel?> = ArrayList<AppDesignModel?>()
     private var mainStatusAdapter: MainStatusAdapter? = null
     private var statusRecycler: RecyclerView? = null
-    private var adLayout:FrameLayout? = null
+    private var adLayout: FrameLayout? = null
 
     //open gallery for blur activity
     var mSelectedImagePath: String? = null
@@ -82,7 +81,6 @@ open class MainActivity : AppCompatActivity(), MainStatusClickListener,
         bannerAds()
 
         statusRecycler = findViewById(R.id.statusRecycler)
-
 
 
         val wingsLinear = findViewById<LinearLayout>(R.id.wings_linear)
@@ -126,7 +124,6 @@ open class MainActivity : AppCompatActivity(), MainStatusClickListener,
             }
         }, DELAY_MS, PERIOD_MS)
     }
-
 
     /**************************************Banner Ads *********************************/
     fun bannerAds() {

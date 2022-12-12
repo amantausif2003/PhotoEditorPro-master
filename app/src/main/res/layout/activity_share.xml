@@ -1,15 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/design_back">
 
 
+    <FrameLayout
+        android:id="@+id/adLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_62sdp"
+        android:background="#03A9F4"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lout_header">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/loading_ad"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16sdp"
+            android:textStyle="bold" />
+
+    </FrameLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/adView">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/adLayout">
 
         <RelativeLayout
             android:id="@+id/top_layout"
@@ -24,6 +48,7 @@
                 android:id="@+id/iv_back"
                 style="@style/ImageViewPIXEditorActivity"
                 android:layout_alignParentLeft="true"
+                android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_arrow_back"
                 app:tint="@color/white" />
 
@@ -59,6 +84,7 @@
                 android:id="@+id/iv_home"
                 style="@style/ImageViewPIXEditorActivity"
                 android:layout_centerVertical="true"
+                android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_home"
                 app:tint="@color/white" />
 
@@ -71,9 +97,10 @@
                 style="@style/ImageViewPIXEditorActivity"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_share"
                 app:tint="@color/white" />
         </RelativeLayout>
     </RelativeLayout>
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

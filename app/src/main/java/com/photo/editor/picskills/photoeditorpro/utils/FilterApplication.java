@@ -1,8 +1,12 @@
 package com.photo.editor.picskills.photoeditorpro.utils;
 
 import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.multidex.MultiDexApplication;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.firebase.FirebaseApp;
 
 public class FilterApplication extends MultiDexApplication {
@@ -27,7 +31,12 @@ public class FilterApplication extends MultiDexApplication {
         super.onCreate();
         context = this;
         setContext(getApplicationContext());
-        MobileAds.initialize(this);
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
+
+            }
+        });
         FirebaseApp.initializeApp(this);
     }
 }

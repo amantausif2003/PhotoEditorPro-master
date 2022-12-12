@@ -1,6 +1,7 @@
 package com.photo.editor.picskills.photoeditorpro.activities.blur_serp_tool;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 import androidx.core.view.MotionEventCompat;
@@ -62,6 +63,7 @@ import com.photo.editor.picskills.photoeditorpro.R;
 import com.photo.editor.picskills.photoeditorpro.activities.EditingPicActivity;
 import com.photo.editor.picskills.photoeditorpro.activities.ParentActivity;
 import com.photo.editor.picskills.photoeditorpro.activities.ShareSerpActivity;
+import com.photo.editor.picskills.photoeditorpro.ads.AdManager;
 import com.photo.editor.picskills.photoeditorpro.utils.Constants;
 import com.photo.editor.picskills.photoeditorpro.utils.support.MyExceptionHandlerPix;
 import com.photo.editor.picskills.photoeditorpro.utils.support.SupportedClass;
@@ -464,11 +466,8 @@ public class BlurSerpActivity extends ParentActivity implements OnClickListener,
             customDialog.show();
         }
         getProviderUri(new File(mSelectedImageUri.getPath()));
-        if (SupportedClass.checkConnection(this)) {
-            loadInterstitialAd();
-        } else {
-            Log.e("Interstitial", "Failed to load");
-        }
+
+        AdManager.loadInterstitialAd();
     }
 
     private void getProviderUri(File file) {
@@ -1034,72 +1033,37 @@ public class BlurSerpActivity extends ParentActivity implements OnClickListener,
         }
     }
 
-    public void loadInterstitialAd() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(
-                this,
-                getString(R.string.admob_interstitial_ads_id),
-                adRequest,
-                new InterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                        // The mInterstitialAd reference will be null until
-                        // an ad is loaded.
-                        BlurSerpActivity.this.interstitialAd = interstitialAd;
-                        Log.i(TAG, "onAdLoaded");
-                        interstitialAd.setFullScreenContentCallback(
-                                new FullScreenContentCallback() {
-                                    @Override
-                                    public void onAdDismissedFullScreenContent() {
-                                        // Called when fullscreen content is dismissed.
-                                        // Make sure to set your reference to null so you don't
-                                        // show it a second time.
-                                        BlurSerpActivity.this.interstitialAd = null;
-                                        if (uri != null) {
-                                            Log.e("Ad", "Ad did not load");
-                                            Intent intent = new Intent(BlurSerpActivity.this, ShareSerpActivity.class);
-                                            intent.putExtra(Constants.KEY_URI_IMAGE, uri.toString());
-                                            startActivity(intent);
-                                            finish();
-                                        }
-                                        Log.d("TAG", "The ad was dismissed.");
-                                    }
-
-                                    @Override
-                                    public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                        // Called when fullscreen content failed to show.
-                                        // Make sure to set your reference to null so you don't
-                                        // show it a second time.
-                                        BlurSerpActivity.this.interstitialAd = null;
-                                        Log.d("TAG", "The ad failed to show.");
-                                    }
-
-                                    @Override
-                                    public void onAdShowedFullScreenContent() {
-                                        // Called when fullscreen content is shown.
-                                        Log.d("TAG", "The ad was shown.");
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error
-                        Log.i(TAG, loadAdError.getMessage());
-                        interstitialAd = null;
-                        String error =
-                                String.format(
-                                        "domain: %s, code: %d, message: %s",
-                                        loadAdError.getDomain(), loadAdError.getCode(), loadAdError.getMessage());
-                        Log.e("Interstitial", error);
-                    }
-                });
-    }
-
     private void showInterstitial() {
         // Show the ad if it's ready. Otherwise toast and restart the game.
-        if (interstitialAd != null) {
-            interstitialAd.show(this);
+        if (AdManager.isInterstitialLoaded()) {
+            AdManager.showInterstitial(BlurSerpActivity.this, new AdManager.CallBackInterstitial() {
+                @Override
+                public void interstitialDismissedFullScreenContent() {
+                    if (uri != null) {
+                        Log.e("Ad", "Ad did not load");
+                        Intent intent = new Intent(BlurSerpActivity.this, ShareSerpActivity.class);
+                        intent.putExtra(Constants.KEY_URI_IMAGE, uri.toString());
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+
+                @Override
+                public void interstitialFailedToShowFullScreenContent(@Nullable AdError adError) {
+                    if (uri != null) {
+                        Log.e("Ad", "Ad did not load");
+                        Intent intent = new Intent(BlurSerpActivity.this, ShareSerpActivity.class);
+                        intent.putExtra(Constants.KEY_URI_IMAGE, uri.toString());
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+
+                @Override
+                public void interstitialShowedFullScreenContent() {
+
+                }
+            });
         } else {
             if (uri != null) {
                 Log.e("Ad", "Ad did not load");

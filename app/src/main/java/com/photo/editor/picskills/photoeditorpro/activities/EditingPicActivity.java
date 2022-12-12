@@ -1,13 +1,13 @@
 package com.photo.editor.picskills.photoeditorpro.activities;
 
-import androidx.annotation.NonNull;
+
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -35,22 +35,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.gson.Gson;
 import com.kaopiz.kprogresshud.KProgressHUD;
 import com.photo.editor.picskills.photoeditorpro.BuildConfig;
@@ -59,14 +48,12 @@ import com.photo.editor.picskills.photoeditorpro.activities.blur_serp_tool.BlurS
 import com.photo.editor.picskills.photoeditorpro.activities.black_white_tool.BlackWhiteActivity;
 import com.photo.editor.picskills.photoeditorpro.adapter.GradientFilterAdapter;
 import com.photo.editor.picskills.photoeditorpro.adapter.SimpleFilterAdapter;
+import com.photo.editor.picskills.photoeditorpro.ads.AdManager;
 import com.photo.editor.picskills.photoeditorpro.crop_img.newCrop.StoreManager;
 import com.photo.editor.picskills.photoeditorpro.model.GradientFilterModel;
 import com.photo.editor.picskills.photoeditorpro.model.SimpleFilterModel;
 import com.photo.editor.picskills.photoeditorpro.utils.Constants;
-import com.photo.editor.picskills.photoeditorpro.utils.support.SupportedClass;
-
 import org.json.JSONArray;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -76,7 +63,6 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Objects;
-
 import static com.google.android.gms.common.util.CollectionUtils.listOf;
 import static com.photo.editor.picskills.photoeditorpro.activities.FilterLabActivity.notifyMediaScannerService;
 
@@ -117,10 +103,6 @@ public class EditingPicActivity extends AppCompatActivity implements View.OnClic
     private Uri sourceUri;
     private Uri destinationUri;
 
-    //ads variables
-    private static final String TAG = "EditingPicActivity";
-
-    private InterstitialAd interstitialAd;
     private Uri uri;
 
     @Override
@@ -181,11 +163,8 @@ public class EditingPicActivity extends AppCompatActivity implements View.OnClic
         //addItemInFilterList()
         setSimpleFilterAdapter();
         setGradientFilterAdapter();
-        if (SupportedClass.checkConnection(this)) {
-            loadInterstitialAd();
-        } else {
-            Log.e("Interstitial", "Failed to load");
-        }
+
+        AdManager.loadInterstitialAd();
     }
 
     private void modelSelected() {
@@ -1127,68 +1106,39 @@ public class EditingPicActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
-    public void loadInterstitialAd() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(
-                this,
-                getString(R.string.admob_interstitial_ads_id),
-                adRequest,
-                new InterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                        // The mInterstitialAd reference will be null until
-                        // an ad is loaded.
-                        EditingPicActivity.this.interstitialAd = interstitialAd;
-                        Log.i(TAG, "onAdLoaded");
-                        interstitialAd.setFullScreenContentCallback(
-                                new FullScreenContentCallback() {
-                                    @Override
-                                    public void onAdDismissedFullScreenContent() {
-                                        // Called when fullscreen content is dismissed.
-                                        // Make sure to set your reference to null so you don't
-                                        // show it a second time.
-                                        EditingPicActivity.this.interstitialAd = null;
-                                        if (uri != null) {
-                                            Log.e("Ad", "Ad did not load");
-                                            Intent intent = new Intent(EditingPicActivity.this, ShareSerpActivity.class);
-                                            intent.putExtra(Constants.KEY_URI_IMAGE, uri.toString());
-                                            startActivity(intent);
-                                            finish();
-                                            overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
-                                        }
-                                        Log.d("TAG", "The ad was dismissed.");
-                                    }
-
-                                    @Override
-                                    public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                        // Called when fullscreen content failed to show.
-                                        // Make sure to set your reference to null so you don't
-                                        // show it a second time.
-                                        EditingPicActivity.this.interstitialAd = null;
-                                        Log.d("TAG", "The ad failed to show.");
-                                    }
-
-                                    @Override
-                                    public void onAdShowedFullScreenContent() {
-                                        // Called when fullscreen content is shown.
-                                        Log.d("TAG", "The ad was shown.");
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error
-                        Log.i(TAG, loadAdError.getMessage());
-                        interstitialAd = null;
-                    }
-                });
-    }
-
     private void showInterstitial() {
         // Show the ad if it's ready. Otherwise toast and restart the game.
-        if (interstitialAd != null) {
-            interstitialAd.show(this);
+        if (AdManager.isInterstitialLoaded()) {
+            AdManager.showInterstitial(EditingPicActivity.this, new AdManager.CallBackInterstitial() {
+                @Override
+                public void interstitialDismissedFullScreenContent() {
+                    if (uri != null) {
+                        Log.e("Ad", "Ad did not load");
+                        Intent intent = new Intent(EditingPicActivity.this, ShareSerpActivity.class);
+                        intent.putExtra(Constants.KEY_URI_IMAGE, uri.toString());
+                        startActivity(intent);
+                        finish();
+                        overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+                    }
+                }
+
+                @Override
+                public void interstitialFailedToShowFullScreenContent(@Nullable AdError adError) {
+                    if (uri != null) {
+                        Log.e("Ad", "Ad did not load");
+                        Intent intent = new Intent(EditingPicActivity.this, ShareSerpActivity.class);
+                        intent.putExtra(Constants.KEY_URI_IMAGE, uri.toString());
+                        startActivity(intent);
+                        finish();
+                        overridePendingTransition(R.anim.left_to_right, R.anim.right_to_left);
+                    }
+                }
+
+                @Override
+                public void interstitialShowedFullScreenContent() {
+
+                }
+            });
         } else {
             if (uri != null) {
                 Log.e("Ad", "Ad did not load");

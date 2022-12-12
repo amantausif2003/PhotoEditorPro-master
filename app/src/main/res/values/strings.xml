@@ -72,8 +72,6 @@
 
     <!--original ads-->
     <string name="admob_application_id">ca-app-pub-3043189731871157~4487861222</string>
-    <string name="admob_interstitial_ads_id">ca-app-pub-3043189731871157/5114547184</string>
-    <string name="admob_interstitial_ads_id_2">ca-app-pub-3043189731871157/2488383848</string>
 
     <string name="font_pacifico">Pacifico-Regular.ttf</string>
     <string name="font_josefinSans_regular">JosefinSans-Regular.ttf</string>

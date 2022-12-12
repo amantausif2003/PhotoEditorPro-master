@@ -7,10 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-
 import com.bumptech.glide.Glide;
 import com.photo.editor.picskills.photoeditorpro.R;
 import com.photo.editor.picskills.photoeditorpro.custom.MyBounceInterpolator;
@@ -27,7 +24,9 @@ public class ShareSerpActivity extends ParentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
+
         Thread.setDefaultUncaughtExceptionHandler(new MyExceptionHandlerPix(ShareSerpActivity.this));
+
         init();
 
         (findViewById(R.id.iv_home)).setOnClickListener(new View.OnClickListener() {
@@ -41,12 +40,14 @@ public class ShareSerpActivity extends ParentActivity {
 
             }
         });
+
         (findViewById(R.id.iv_back)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onBackPressed();
             }
         });
+
         (findViewById(R.id.iv_share)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -58,7 +59,7 @@ public class ShareSerpActivity extends ParentActivity {
 
     public void init() {
 
-        mIvCreate = (ImageView) findViewById(R.id.iv_create);
+        mIvCreate = findViewById(R.id.iv_create);
 
         mImgUri = Uri.parse(getIntent().getStringExtra(Constants.KEY_URI_IMAGE));
 
@@ -82,10 +83,8 @@ public class ShareSerpActivity extends ParentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
         }
         return super.onOptionsItemSelected(item);
     }

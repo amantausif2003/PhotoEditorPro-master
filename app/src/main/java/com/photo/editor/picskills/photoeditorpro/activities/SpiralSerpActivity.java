@@ -8,7 +8,6 @@ import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -40,17 +39,12 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.ads.AdError;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.FullScreenContentCallback;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.tabs.TabLayout;
 import com.photo.editor.picskills.photoeditorpro.R;
 import com.photo.editor.picskills.photoeditorpro.adapter.SpiralEffectListAdapter;
 import com.photo.editor.picskills.photoeditorpro.adapter.StickerAdapter;
+import com.photo.editor.picskills.photoeditorpro.ads.AdManager;
 import com.photo.editor.picskills.photoeditorpro.callback.MenuItemClickLister;
 import com.photo.editor.picskills.photoeditorpro.callback.StickerClickListener;
 import com.photo.editor.picskills.photoeditorpro.crop_img.newCrop.MLCropAsyncTask;
@@ -64,7 +58,6 @@ import com.photo.editor.picskills.photoeditorpro.utils.Constants;
 import com.photo.editor.picskills.photoeditorpro.utils.ImageUtils;
 import com.photo.editor.picskills.photoeditorpro.utils.support.FastBlur;
 import com.photo.editor.picskills.photoeditorpro.utils.support.SupportedClass;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -99,9 +92,6 @@ public class SpiralSerpActivity extends ParentActivity implements MenuItemClickL
     private TabLayout tabLayout;
     private String oldSavedFileName;
 
-    //ads variables
-    private static final String TAG = "SpiralSerpActvity";
-    private InterstitialAd interstitialAd;
 
 
     public static void setFaceBitmap(Bitmap bitmap) {
@@ -140,11 +130,7 @@ public class SpiralSerpActivity extends ParentActivity implements MenuItemClickL
         }
         Init();
         setTollbarData();
-        if (SupportedClass.checkConnection(this)) {
-            loadInterstitialAd();
-        } else {
-            Log.e("Interstitial", "Failed to load");
-        }
+        AdManager.loadInterstitialAd();
     }
 
     private void initBMPNew() {
@@ -796,69 +782,31 @@ public class SpiralSerpActivity extends ParentActivity implements MenuItemClickL
         }
     }
 
-    public void loadInterstitialAd() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(
-                this,
-                getString(R.string.admob_interstitial_ads_id),
-                adRequest,
-                new InterstitialAdLoadCallback() {
-                    @Override
-                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                        // The mInterstitialAd reference will be null until
-                        // an ad is loaded.
-                        SpiralSerpActivity.this.interstitialAd = interstitialAd;
-                        Log.i(TAG, "onAdLoaded");
-                        interstitialAd.setFullScreenContentCallback(
-                                new FullScreenContentCallback() {
-                                    @Override
-                                    public void onAdDismissedFullScreenContent() {
-                                        // Called when fullscreen content is dismissed.
-                                        // Make sure to set your reference to null so you don't
-                                        // show it a second time.
-                                        SpiralSerpActivity.this.interstitialAd = null;
-                                        if (savedImageUri != null) {
-                                            Log.e("Ad", "Ad did not load");
-                                            openShareActivity();
-                                        }
-                                        Log.d("TAG", "The ad was dismissed.");
-                                    }
-
-                                    @Override
-                                    public void onAdFailedToShowFullScreenContent(AdError adError) {
-                                        // Called when fullscreen content failed to show.
-                                        // Make sure to set your reference to null so you don't
-                                        // show it a second time.
-                                        SpiralSerpActivity.this.interstitialAd = null;
-                                        Log.d("TAG", "The ad failed to show.");
-                                    }
-
-                                    @Override
-                                    public void onAdShowedFullScreenContent() {
-                                        // Called when fullscreen content is shown.
-                                        Log.d("TAG", "The ad was shown.");
-                                    }
-                                });
-                    }
-
-                    @Override
-                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                        // Handle the error
-                        Log.i(TAG, loadAdError.getMessage());
-                        interstitialAd = null;
-                        String error =
-                                String.format(
-                                        "domain: %s, code: %d, message: %s",
-                                        loadAdError.getDomain(), loadAdError.getCode(), loadAdError.getMessage());
-                        Log.e("Interstitial", error);
-                    }
-                });
-    }
-
     private void showInterstitial() {
         // Show the ad if it's ready. Otherwise toast and restart the game.
-        if (interstitialAd != null) {
-            interstitialAd.show(this);
+        if (AdManager.isInterstitialLoaded()) {
+            AdManager.showInterstitial(SpiralSerpActivity.this, new AdManager.CallBackInterstitial() {
+                @Override
+                public void interstitialDismissedFullScreenContent() {
+                    if (savedImageUri != null) {
+                        Log.e("Ad", "Ad did not load");
+                        openShareActivity();
+                    }
+                }
+
+                @Override
+                public void interstitialFailedToShowFullScreenContent(@Nullable AdError adError) {
+                    if (savedImageUri != null) {
+                        Log.e("Ad", "Ad did not load");
+                        openShareActivity();
+                    }
+                }
+
+                @Override
+                public void interstitialShowedFullScreenContent() {
+
+                }
+            });
         } else {
             if (savedImageUri != null) {
                 Log.e("Ad", "Ad did not load");
