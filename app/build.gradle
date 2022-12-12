@@ -10,14 +10,16 @@ plugins {
 android {
 
     signingConfigs {
+
         config {
-            storeFile file('D:\\office_app\\PhotoEditorPro-master\\app\\keystore.jks')
+            storeFile file('D:\\office_app\\PhotoEditorPro-master\\app\\jks\\keystore.jks')
             keyAlias 'key0'
             keyPassword 'filterapp'
             storePassword 'filterapp'
         }
+
         debug {
-            storeFile file('D:\\office_app\\PhotoEditorPro-master\\app\\keystore.jks')
+            storeFile file('D:\\office_app\\PhotoEditorPro-master\\app\\jks\\keystore.jks')
             keyAlias 'key0'
             keyPassword 'filterapp'
             storePassword 'filterapp'
@@ -34,8 +36,8 @@ android {
         //noinspection OldTargetApi
         targetSdk 32
 
-        versionCode 18
-        versionName "18"
+        versionCode 19
+        versionName "19"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true
@@ -51,12 +53,14 @@ android {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
 
         release {
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 
