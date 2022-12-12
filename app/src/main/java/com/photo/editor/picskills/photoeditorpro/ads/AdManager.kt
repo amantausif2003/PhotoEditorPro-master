@@ -19,7 +19,7 @@ object AdManager {
     private val adRequest: AdRequest = AdRequest.Builder().build()
     private var callBackInterstitial: CallBackInterstitial? = null
 
-    var interstitialStatusId: Boolean = false
+    private var interstitialStatusId: Boolean = false
 
     @JvmStatic
     fun loadInterstitialAd() {
