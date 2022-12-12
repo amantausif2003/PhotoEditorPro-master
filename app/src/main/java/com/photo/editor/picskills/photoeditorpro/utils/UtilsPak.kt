@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.widget.Toast
+import com.photo.editor.picskills.photoeditorpro.BuildConfig
+
 
 object UtilsPak {
 
@@ -20,6 +22,22 @@ object UtilsPak {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA
         )
+    }
+
+    var bannerStatusId: Boolean = false
+
+    fun getBannerID(): String {
+        return if (BuildConfig.DEBUG) {
+            "ca-app-pub-3940256099942544/6300978111"
+        } else {
+            if (bannerStatusId) {
+                bannerStatusId = false
+                return "ca-app-pub-3043189731871157/8652633255"
+            } else {
+                bannerStatusId = true
+                return "ca-app-pub-3043189731871157/3550719502"
+            }
+        }
     }
 
     @Suppress("USELESS_CAST")

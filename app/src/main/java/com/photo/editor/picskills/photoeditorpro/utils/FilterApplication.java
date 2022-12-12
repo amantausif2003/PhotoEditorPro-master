@@ -1,6 +1,5 @@
 package com.photo.editor.picskills.photoeditorpro.utils;
 
-
 import android.content.Context;
 import androidx.multidex.MultiDexApplication;
 import com.google.android.gms.ads.MobileAds;
@@ -26,6 +25,7 @@ public class FilterApplication extends MultiDexApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        context = this;
         setContext(getApplicationContext());
         MobileAds.initialize(this);
         FirebaseApp.initializeApp(this);

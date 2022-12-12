@@ -1,48 +1,16 @@
 package com.photo.editor.picskills.photoeditorpro.activities;
 
-import android.Manifest;
-import android.app.Dialog;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
+import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
-
-import com.karumi.dexter.Dexter;
-import com.karumi.dexter.MultiplePermissionsReport;
-import com.karumi.dexter.PermissionToken;
-import com.karumi.dexter.listener.PermissionRequest;
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
-import com.photo.editor.picskills.photoeditorpro.BuildConfig;
 import com.photo.editor.picskills.photoeditorpro.R;
-import com.photo.editor.picskills.photoeditorpro.utils.Constants;
-import com.photo.editor.picskills.photoeditorpro.utils.ImageUtils;
-import com.photo.editor.picskills.photoeditorpro.utils.support.SupportedClass;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-
 import jp.shts.android.storiesprogressview.StoriesProgressView;
 
 public class StatusActivity extends AppCompatActivity implements StoriesProgressView.StoriesListener, View.OnTouchListener, View.OnClickListener {

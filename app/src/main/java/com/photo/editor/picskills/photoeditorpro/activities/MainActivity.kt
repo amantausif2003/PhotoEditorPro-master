@@ -25,13 +25,18 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import com.photo.editor.picskills.photoeditorpro.BuildConfig
 import com.photo.editor.picskills.photoeditorpro.ads.AdManager
 import com.photo.editor.picskills.photoeditorpro.utils.Constants
@@ -51,6 +56,7 @@ open class MainActivity : AppCompatActivity(), MainStatusClickListener,
     private val statusDesignList: ArrayList<AppDesignModel?> = ArrayList<AppDesignModel?>()
     private var mainStatusAdapter: MainStatusAdapter? = null
     private var statusRecycler: RecyclerView? = null
+    private var adLayout:FrameLayout? = null
 
     //open gallery for blur activity
     var mSelectedImagePath: String? = null
@@ -70,9 +76,14 @@ open class MainActivity : AppCompatActivity(), MainStatusClickListener,
         setContentView(R.layout.activity_main)
         activity = this
 
+        adLayout = findViewById(R.id.adLayout)
+
         AdManager.loadInterstitialAd()
+        bannerAds()
 
         statusRecycler = findViewById(R.id.statusRecycler)
+
+
 
         val wingsLinear = findViewById<LinearLayout>(R.id.wings_linear)
         val spiralLinearLayout = findViewById<LinearLayout>(R.id.spiral_linear)
@@ -115,6 +126,47 @@ open class MainActivity : AppCompatActivity(), MainStatusClickListener,
             }
         }, DELAY_MS, PERIOD_MS)
     }
+
+
+    /**************************************Banner Ads *********************************/
+    fun bannerAds() {
+        adLayout?.visibility = View.VISIBLE
+        adLayout?.post { loadBanner() }
+    }
+
+    private fun loadBanner() {
+        Log.e("myTag", "BannerAds")
+        val adView = AdView(this)
+        adView.adUnitId = UtilsPak.getBannerID()
+        val adSize = adSize
+        adView.setAdSize(adSize)
+        adLayout?.addView(adView)
+        val adRequest = AdRequest.Builder().build()
+        // Start loading the ad in the background.
+        try {
+            adView.loadAd(adRequest)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
+    }
+
+    // Determine the screen width (less decorations) to use for the ad width.
+    @Suppress("DEPRECATION")
+    private val adSize: AdSize
+        get() {
+            // Determine the screen width (less decorations) to use for the ad width.
+            val display = windowManager.defaultDisplay
+            val outMetrics = DisplayMetrics()
+            display.getMetrics(outMetrics)
+            val density = outMetrics.density
+            var adWidthPixels = adLayout!!.width.toFloat()
+            // If the ad hasn't been laid out, default to the full screen width.
+            if (adWidthPixels == 0f) {
+                adWidthPixels = outMetrics.widthPixels.toFloat()
+            }
+            val adWidth = (adWidthPixels / density).toInt()
+            return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth)
+        }
 
     fun setStatusAdapater() {
         mainStatusAdapter = MainStatusAdapter(statusDesignList, this)

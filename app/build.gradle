@@ -24,13 +24,6 @@ android {
         }
     }
 
-    /* signingConfigs {
-         config {
-             keyAlias 'key0'
-             keyPassword 'filterapp'
-         }
-     }*/
-
     compileSdk 32
     // NOTE: Do not place any update dependencies here; they belong 30.0.3
     buildToolsVersion '30.0.3'
